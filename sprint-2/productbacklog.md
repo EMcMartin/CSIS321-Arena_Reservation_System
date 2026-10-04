@@ -5,3 +5,5 @@
 | US-03 | As an admin, I want to log in so I can control the schedule | medium | 5 | none |
 | US-04 | As an admin, I want to see event requests so I can approve/deny them | low | 8 | US-03 |
 | US-05 | As an admin, I want to receive notifications so I know when something is requested | low | 13 | US-03, US-04|
+
+Our team chose this priority order because the main function we want is the calendar. We also need event booking to be a high priority. We would also like to create admin functions, but there is no point in having an admin if there is no calendar or booking options.
