@@ -10,3 +10,5 @@ We are building it to help out stakeholder keep booking information organized an
 **How is the repository organized?**
 
 We will have different parts of the project in different files, and if anyone is working on the same file at the same time, we will create different versions.
+
+living doc https://docs.google.com/document/d/1nFlgJa09SSaT-4AapRA8heeboB7IaOTKFQ-Fg9JBtoM/edit?usp=sharing
