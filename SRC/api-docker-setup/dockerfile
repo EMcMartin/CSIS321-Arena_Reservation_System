@@ -1,0 +1,16 @@
+FROM python:3.12-slim
+
+# no need to copy in source, it will be mounted as a volume
+RUN mkdir api 
+
+WORKDIR /api
+
+# setup the requirements for the app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+EXPOSE 8887
+
+# initalize the database if needed and run the webserver
+# the option --reload is ok because the app will only be used locally
+CMD ["gunicorn", "--reload", "-w 4", "-b 0.0.0.0:8887", "endpoint:app"]

@@ -1,0 +1,19 @@
+services:
+  api:   # listen on port 8888
+    build:
+      context: .
+      dockerfile: ./dockerfile
+    ports:
+      - "8887:8887"
+    env_file:
+      - .env
+    volumes:
+      - ./src:/api #map src directory for autoreload
+    restart: unless-stopped
+    networks:
+      - api-net
+
+
+networks:
+  api-net:
+    name: api-net
