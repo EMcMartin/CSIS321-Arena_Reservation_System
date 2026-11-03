@@ -24,7 +24,7 @@ class MyTask(db.Model):
 # setup logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
-
+#home page 
 @app.route("/")
 def admin_index_page():
 	"""
