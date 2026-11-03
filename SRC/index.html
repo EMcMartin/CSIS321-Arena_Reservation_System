@@ -6,11 +6,20 @@
         <title>Calendar App Vanilla JS</title>
 
         <link rel="stylesheet" href="style.css">
+        <link rel="icon" href="gf_blue_slate.png">
     </head>
 
     <body>
 
+       
         <div id="container">
+            <div id="header">
+                <img src="Logo.png" height="100">
+                <div>Event Calendar</div>
+            </div>
+            
+            
+
             <div id="header">
                 <div id="monthDisplay"></div>
                 <div>
@@ -29,8 +38,12 @@
                 <div>Saturday</div>
             </div>
 
+
             <div id="calendar"></div>
         </div>
+       
+        
+
 
         <div id="newEventModal">
             <h2>New Event</h2>
@@ -40,6 +53,7 @@
             <button id="saveButton">Save</button>
             <button id="cancelButton">Cancel</button>
         </div>
+    
 
         <div id="deleteEventModal">
             <h2>Event</h2>
@@ -49,6 +63,8 @@
             <button id="deleteButton">Delete</button>
             <button id="closeButton">Close</button>
         </div>
+
+       
 
         <div id="modalBackDrop"></div>
 
