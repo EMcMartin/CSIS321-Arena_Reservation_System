@@ -14,6 +14,9 @@ We will have different parts of the project in different files, and if anyone is
 living doc [Living_Project_Document](https://docs.google.com/document/d/1nFlgJa09SSaT-4AapRA8heeboB7IaOTKFQ-Fg9JBtoM/edit?usp=sharing)
 
 Feature Assignment Plan:
+
 Ethan - work on database and JavaScript
+
 Peyton - Work on API
+
 Tashi - Work on frontend HTML and CSS
