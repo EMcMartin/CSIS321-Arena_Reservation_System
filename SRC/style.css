@@ -111,11 +111,11 @@ button {
 #cancelButton, #deleteButton {
   background-color: #d36c6c;
 }
-#saveButton, #closeButton {
+#saveButton, #closeButton, #loginButton {
   background-color: #7998AC;
 }
 
-#timeButton{
+#timeButton{ 
   background-color: #f0f0f0;
   color:#1F2A42;
   border-radius: 15px;
