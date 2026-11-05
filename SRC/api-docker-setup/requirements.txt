@@ -1,0 +1,4 @@
+flask
+gunicorn
+Flask-SqlAlchemy
+psycopg[binary]
