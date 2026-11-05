@@ -6,11 +6,24 @@
         <title>Calendar App Vanilla JS</title>
 
         <link rel="stylesheet" href="style.css">
+        <link rel="icon" href="gf_blue_slate.png">
     </head>
 
     <body>
 
+
+       
         <div id="container">
+            <div id="header">
+                <img src="Logo.png" height="100">
+                <div>Event Calendar</div>
+                <div>
+                    <button id="loginButton">Login</button>
+                </div>
+            </div>
+            
+            
+
             <div id="header">
                 <div id="monthDisplay"></div>
                 <div>
@@ -29,17 +42,36 @@
                 <div>Saturday</div>
             </div>
 
+
             <div id="calendar"></div>
         </div>
+       
+        
+
 
         <div id="newEventModal">
             <h2>New Event</h2>
-
             <input id="eventTitleInput" placeholder="Event Title" />
+            <br>
+            <h2>Choose a Time:</h2>
+
+        
+            <button id="timeButton">9:00 AM</button>
+            <button id="timeButton">10:00 AM</button>
+            <button id="timeButton">11:00 AM</button>
+            <button id="timeButton">12:00 PM</button>
+            <button id="timeButton">1:00 PM</button>
+            <button id="timeButton">2:00 PM</button>
+            <button id="timeButton">3:00 PM</button>
+            <button id="timeButton">4:00 PM</button>
+            
+
+            
 
             <button id="saveButton">Save</button>
             <button id="cancelButton">Cancel</button>
         </div>
+    
 
         <div id="deleteEventModal">
             <h2>Event</h2>
@@ -49,6 +81,8 @@
             <button id="deleteButton">Delete</button>
             <button id="closeButton">Close</button>
         </div>
+
+       
 
         <div id="modalBackDrop"></div>
 
