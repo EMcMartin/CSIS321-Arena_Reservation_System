@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from dotenv import load_dotenv
 from sqlalchemy.dialects.postgresql import INT4MULTIRANGE
+from psycopg.types.multirange import Multirange
 from psycopg.types.range import Range
 from sqlalchemy import text
 
@@ -25,15 +26,15 @@ db = SQLAlchemy(app)
 
 
 # defines database information for the Event table
-class Event(db.Model):
-	__tablename__ = "events"
+class calendar(db.Model):
+	__tablename__ = "days"
 
 	id = db.Column(db.String(50), primary_key=True)
 	day = db.Column(db.Integer, nullable=False)
 	month = db.Column(db.Integer, nullable=False)
 	year = db.Column(db.Integer, nullable=False)
 	weekday = db.Column(db.String(50), nullable=False)
-	available_time = db.Column(INT4MULTIRANGE, nullable=True)
+	available_times = db.Column(INT4MULTIRANGE, nullable=True)
 
 	def to_dict(self):
 		return {
@@ -42,21 +43,45 @@ class Event(db.Model):
 			"month": self.month,
 			"year": self.year,
 			"weekday": self.weekday,
-			"available_time":
+			"available_times":
 			[
 				{
 					"lower": r.lower,
 					"upper": r.upper,
 					"bounds": r.bounds
 				}
-				for r in (self.available_time or [])
+				for r in (self.available_times or [])
 			],
 		}
 
 # setup logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
+@app.route("/calendar", methods=["POST"])
+def create_day():
+	data = request.get_json()
+	if not data:
+		return jsonify({"error": "Invalid input"}), 400
 
+	try:
+		new_day = calendar(
+			id="11/01/26",
+			day=1,
+			month=11,
+			year=2026,
+			weekday="sunday",
+			available_times=Multirange([
+				Range(3, 6, "[)"),
+				Range(7, 10, "[)")
+			])
+		)
+		db.session.add(new_day)
+		db.session.commit()
+		return jsonify({"message": "Day created successfully"}), 201
+	except Exception as e:
+		db.session.rollback()
+		logging.error(f"Error creating day: {e}")
+		return jsonify({"error": "An error occurred while creating the day"}), 500
 
 @app.route("/health", methods=["GET"])
 def health_check():
@@ -73,18 +98,10 @@ def health_check():
             "database": "disconnected",
             "error": str(e)
         }), 500
-	
-@app.route("/events", methods=["GET"])
-def view_events():
-	events = Event.query.all()
-	for event in events:
-		print(event.id)
-	return render_template("events.html", events=events)	
-
-
+		
 @app.route("/api/schedules/<int:available_time_id>", methods=["GET"])
-def get_available_time(event_id):
-    event = Event.query.get_or_404(event_id)
+def get_available_time(calendar_id):
+    event = calendar.query.get_or_404(calendar_id)
     return jsonify(event.to_dict())
 
 
@@ -97,7 +114,7 @@ def admin_index_page():
 		month = request.form.get("month")
 		year = request.form.get("year")
 		weekday = request.form.get("weekday")
-		raw_time = request.form.get("available_time")
+		raw_time = request.form.get("available_times")
 
 		
 		if not (day and month and year and weekday):
@@ -112,13 +129,13 @@ def admin_index_page():
 					start, end = part.strip().split("-")
 					parsed_range.append(Range(int(start), int(end)))
 			
-			new_event = Event(
+			new_event = calender(
 				id=f"{year}-{month}-{day}",
 				day=int(day),
 				month=int(month),
 				year=int(year),
 				weekday=weekday,
-				available_time=parsed_range,
+				available_times=parsed_range,
 			)
 			db.session.add(new_event)
 			db.session.commit()
