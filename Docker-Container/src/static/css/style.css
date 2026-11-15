@@ -95,7 +95,7 @@ button {
   position: absolute;
   font-family: sans-serif;
 }
-#eventTitleInput {
+#eventTitleInput, #nameInput, #emailInput  {
   padding: 10px;
   width: 100%;
   box-sizing: border-box;
@@ -105,26 +105,7 @@ button {
   border: none;
   box-shadow: 0px 0px 3px gray;
 }
-#nameInput {
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 25px;
-  border-radius: 3px;
-  outline: none;
-  border: none;
-  box-shadow: 0px 0px 3px gray;
-}
-#emailInput {
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 25px;
-  border-radius: 3px;
-  outline: none;
-  border: none;
-  box-shadow: 0px 0px 3px gray;
-}
+
 #descriptionTextArea {
   padding: 10px;
   font-family: sans-serif;
@@ -139,7 +120,7 @@ button {
   border: none;
   box-shadow: 0px 0px 3px gray;
 }
-#eventTitleInput.error {
+#eventTitleInput.error, #nameInput.error, #emailInput.error, #descriptionTextArea.error {
   border: 2px solid red;
 }
 #cancelButton, #deleteButton {
