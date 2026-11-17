@@ -9,6 +9,9 @@ const newEventModal = document.getElementById('newEventModal');
 const deleteEventModal = document.getElementById('deleteEventModal');
 const backDrop = document.getElementById("modalBackDrop");
 const eventTitleInput = document.getElementById('eventTitleInput');
+const nameInput = document.getElementById('nameInput');
+const emailInput = document.getElementById('emailInput');
+const descriptionInput = document.getElementById('descriptionTextArea');
 const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 /**
@@ -122,6 +125,12 @@ function closeModal()
     backDrop.style.display = 'none';
     eventTitleInput.value = '';
     eventTitleInput.classList.remove('error');
+    nameInput.value = '';
+    nameInput.classList.remove('error');
+    emailInput.value = '';
+    emailInput.classList.remove('error');
+    descriptionInput.value = '';
+    descriptionInput.classList.remove('error');
     clicked = null;
     load();
 }
@@ -131,8 +140,41 @@ function closeModal()
  */
 function saveEvent()
 {
+    let valid = true;
     // TODO: Will need to edit this to talk to the new api
-    if (eventTitleInput.value)
+
+    // Validating the input from the user
+    if (!nameInput.value)
+    {
+        nameInput.classList.add('error');
+        valid = false;
+    }
+    else
+    {
+        nameInput.classList.remove('error');
+    }
+
+    if (!eventTitleInput.value)
+    {
+        eventTitleInput.classList.add('error');
+        valid = false;
+    }
+    else
+    {
+        eventTitleInput.classList.remove('error');
+    }
+
+    if (!emailInput.value || !emailInput.value.endsWith("@georgefox.edu"))
+    {
+        emailInput.classList.add('error');
+        valid = false;
+    }
+    else
+    {
+        emailInput.classList.remove('error');
+    }
+
+    if(valid)
     {
         eventTitleInput.classList.remove('error');
 
@@ -143,10 +185,6 @@ function saveEvent()
 
         localStorage.setItem('events', JSON.stringify(events));
         closeModal();
-    }
-    else
-    {
-        eventTitleInput.classList.add('error');
     }
 }
 
