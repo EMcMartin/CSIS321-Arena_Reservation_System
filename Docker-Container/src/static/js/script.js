@@ -4,6 +4,7 @@ let clicked = null;
 let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
 
 // Global Constants for the file
+const apiUrl = 'http://localhost:8887';
 const calendar = document.getElementById('calendar');
 const newEventModal = document.getElementById('newEventModal');
 const deleteEventModal = document.getElementById('deleteEventModal');
@@ -138,7 +139,7 @@ function closeModal()
 /**
  * This is the function that will handle saving a new event
  */
-function saveEvent()
+async function saveEvent()
 {
     let valid = true;
     // TODO: Will need to edit this to talk to the new api
@@ -176,12 +177,33 @@ function saveEvent()
 
     if(valid)
     {
-        eventTitleInput.classList.remove('error');
-
-        events.push({
-            date: clicked,
-            title: eventTitleInput.value,
+        const dateString = clicked.toLocaleDateString('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+            year: 'numeric'
         });
+                
+        const eventData = {
+            event_id: 1,
+            organizer: nameInput.innerText,
+            size: 25,
+            day: dateString,
+            start_time: 7,
+            end_time: 8,
+            description: descriptionInput.innerText,
+        };
+
+        const response = await fetch(`${apiUrl}/event`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(eventData)
+        });
+
+        const data = await response.json();
+
+        console.log(data);
+
+        eventTitleInput.classList.remove('error');
 
         localStorage.setItem('events', JSON.stringify(events));
         closeModal();
