@@ -148,7 +148,18 @@ def create_event():
 		logging.error(f"Error creating event: {e}")
 		return jsonify({"error": "An error occurred while creating the event"}), 500
 	
-    
+@app.route("/event", methods=["GET"])
+def send_data():
+	day = request.args.get("day")
+	if not day:
+		return jsonify({"error": "Please provide a day parameter."}), 400
+
+	events = Event.query.filter_by(day=day).all()
+
+	if events:
+		return jsonify([event.to_dict() for event in events])
+	return jsonify({"error": "No events found for the specified day."}), 404
+
 
 # checks the health of the application and database connection
 @app.route("/health", methods=["GET"])
