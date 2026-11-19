@@ -25,6 +25,31 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 db = SQLAlchemy(app)
 
 
+
+#defines event table for the database
+class Event(db.Model):
+	__tablename__ = "events"
+
+	event_id = db.Column(db.Integer, primary_key=True)
+	organizer = db.Column(db.String(100), nullable=False)
+	size = db.Column(db.Integer, nullable=False)
+	day = db.Column(db.String(50), nullable=False)
+	time_start = db.Column(db.Time, nullable=False)
+	time_end = db.Column(db.Time, nullable=False)
+	description = db.Column(db.String(255), nullable=True)
+	
+
+	def to_dict(self):
+		return {
+			"id": self.event_id,
+			"organizer": self.organizer,
+			"description": self.description,
+			"size": self.size,
+			"start_time": self.time_start.isoformat(),
+			"end_time": self.time_end.isoformat(),
+			"day": self.day
+		}
+
 # defines database information for the Event table
 class calendar(db.Model):
 	__tablename__ = "days"
@@ -56,7 +81,7 @@ class calendar(db.Model):
 
 # setup logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-
+#create a new day into the database
 @app.route("/calendar", methods=["POST"])
 def create_day():
 	data = request.get_json()
@@ -83,6 +108,49 @@ def create_day():
 		logging.error(f"Error creating day: {e}")
 		return jsonify({"error": "An error occurred while creating the day"}), 500
 
+#getting information about event 
+@app.route("/event", methods=["GET"])
+def get_event():
+	id = request.args.get("id")
+	organizer = request.args.get("organizer")
+	size = request.args.get("size")
+	description = request.args.get("description")
+	start_time = request.args.get("start_time")
+	end_time = request.args.get("end_time")
+	day = request.args.get("day")
+	if not (id or description or organizer or size or start_time or end_time or day):
+		return jsonify({"error": "Please provide at least one query parameter."}), 400
+	return jsonify({
+		"message": "Event retrieved successfully"
+		}), 200
+
+#creates events into the database
+@app.route("/event", methods=["POST"])
+def create_event():
+	data = request.get_json()
+	if not data:
+		return jsonify({"error": "Invalid input"}), 400
+	
+	try:
+		new_event = Event(
+			event_id=data.get("id"),
+			organizer=data.get("organizer"),
+			description=data.get("description"),
+			size=data.get("size"),
+			time_start=data.get("time_start"),
+			time_end=data.get("time_end")
+		)
+		db.session.add(new_event)
+		db.session.commit()
+		return jsonify({"message": "Event created successfully"}), 201
+	except Exception as e:
+		db.session.rollback()
+		logging.error(f"Error creating event: {e}")
+		return jsonify({"error": "An error occurred while creating the event"}), 500
+	
+    
+
+# checks the health of the application and database connection
 @app.route("/health", methods=["GET"])
 def health_check():
     try:
@@ -98,7 +166,8 @@ def health_check():
             "database": "disconnected",
             "error": str(e)
         }), 500
-		
+
+#used to get the available time for a specific day in the calendar		
 @app.route("/api/schedules/<int:available_time_id>", methods=["GET"])
 def get_available_time(calendar_id):
     event = calendar.query.get_or_404(calendar_id)
@@ -129,7 +198,7 @@ def admin_index_page():
 					start, end = part.strip().split("-")
 					parsed_range.append(Range(int(start), int(end)))
 			
-			new_event = calender(
+			new_event = calendar(
 				id=f"{year}-{month}-{day}",
 				day=int(day),
 				month=int(month),
