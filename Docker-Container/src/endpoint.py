@@ -34,8 +34,8 @@ class Event(db.Model):
 	organizer = db.Column(db.String(100), nullable=False)
 	size = db.Column(db.Integer, nullable=False)
 	day = db.Column(db.String(50), nullable=False)
-	time_start = db.Column(db.Time, nullable=False)
-	time_end = db.Column(db.Time, nullable=False)
+	time_start = db.Column(db.Integer, nullable=False)
+	time_end = db.Column(db.Integer, nullable=False)
 	description = db.Column(db.String(255), nullable=True)
 	
 
@@ -43,11 +43,11 @@ class Event(db.Model):
 		return {
 			"id": self.event_id,
 			"organizer": self.organizer,
-			"description": self.description,
 			"size": self.size,
-			"start_time": self.time_start.isoformat(),
-			"end_time": self.time_end.isoformat(),
-			"day": self.day
+			"day": self.day,
+			"start_time": self.time_start,
+			"end_time": self.time_end,
+			"description": self.description,
 		}
 
 # defines database information for the Event table
@@ -133,12 +133,12 @@ def create_event():
 	
 	try:
 		new_event = Event(
-			event_id=data.get("id"),
 			organizer=data.get("organizer"),
 			description=data.get("description"),
 			size=data.get("size"),
 			time_start=data.get("time_start"),
-			time_end=data.get("time_end")
+			time_end=data.get("time_end"),
+			day=data.get("day")
 		)
 		db.session.add(new_event)
 		db.session.commit()
