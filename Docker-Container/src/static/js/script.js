@@ -177,17 +177,12 @@ async function saveEvent()
 
     if(valid)
     {
-        const dateString = clicked.toLocaleDateString('en-US', {
-            month: '2-digit',
-            day: '2-digit',
-            year: 'numeric'
-        });
                 
         const eventData = {
             event_id: 1,
             organizer: nameInput.innerText,
             size: 25,
-            day: dateString,
+            day: clicked,
             start_time: 7,
             end_time: 8,
             description: descriptionInput.innerText,
