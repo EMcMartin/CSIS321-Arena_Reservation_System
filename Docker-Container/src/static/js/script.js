@@ -77,6 +77,18 @@ async function load()
     
     calendar.innerHTML = '';
 
+    const params = new URLSearchParams({ month: `${month + 1}`});
+
+    const response = await fetch(`${apiUrl}/event?${params}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
+
+    const events = await response.json();
+
+    console.log(response);
+    console.log(events);
+
     // Rendering all fo the days of the current month
     for(let i = 1; i <= paddingDays + daysInMonth; i++)
     {
@@ -89,24 +101,18 @@ async function load()
         {
             daySquare.innerText = i - paddingDays;
             
-            const requestData = {
-                day:dayString 
-            }
-
-            const response = await fetch(`${apiUrl}/event`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestData)
-            });
-
-            const events = await response.json();
-
-            for (const event of events) 
+            if (response.ok)
             {
-                const eventDiv = document.createElement('div');
-                eventDiv.classList.add('event');
-                eventDiv.innerText = event.title;
-                daySquare.appendChild(eventDiv);
+
+                const dayEvents = events.filter(event => event.day === dayString);
+
+                for (const event of dayEvents) 
+                {
+                    const eventDiv = document.createElement('div');
+                    eventDiv.classList.add('event');
+                    eventDiv.innerText = event.title;
+                    daySquare.appendChild(eventDiv);
+                }
             }
 
             if (i - paddingDays === day && nav === 0)

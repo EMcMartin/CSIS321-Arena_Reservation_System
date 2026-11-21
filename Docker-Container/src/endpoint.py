@@ -43,6 +43,7 @@ class Event(db.Model):
 	def to_dict(self):
 		return {
 			"id": self.event_id,
+			"title": self.title,
 			"organizer": self.organizer,
 			"size": self.size,
 			"day": self.day,
@@ -109,6 +110,7 @@ def create_day():
 		logging.error(f"Error creating day: {e}")
 		return jsonify({"error": "An error occurred while creating the day"}), 500
 
+"""
 #getting information about event 
 @app.route("/event", methods=["GET"])
 def get_event():
@@ -124,6 +126,7 @@ def get_event():
 	return jsonify({
 		"message": "Event retrieved successfully"
 		}), 200
+		"""
 
 #creates events into the database
 @app.route("/event", methods=["POST"])
@@ -134,7 +137,7 @@ def create_event():
 	
 	try:
 		new_event = Event(
-			title = data.get("title",)
+			title = data.get("title"),
 			organizer = data.get("organizer"),
 			description = data.get("description"),
 			size=data.get("size"),
@@ -153,16 +156,15 @@ def create_event():
 	
 @app.route("/event", methods=["GET"])
 def send_data():
-	day = request.args.get("day")
-	if not day:
+	month = request.args.get("month")
+	if not month:
 		return jsonify({"error": "Please provide a day parameter."}), 400
 
-	events = Event.query.filter_by(day=day).all()
+	events = Event.query.filter(Event.day.contains(month + "/")).all()
 
-	if events:
-		return jsonify([event.to_dict() for event in events])
-		
-	return jsonify({"error": "No events found for the specified day."}), 404
+
+	return jsonify([event.to_dict() for event in events]), 200
+
 
 
 # checks the health of the application and database connection
