@@ -31,6 +31,7 @@ class Event(db.Model):
 	__tablename__ = "events"
 
 	event_id = db.Column(db.Integer, primary_key=True)
+	title = db.Column(db.String(50), nullable=False)
 	organizer = db.Column(db.String(100), nullable=False)
 	size = db.Column(db.Integer, nullable=False)
 	day = db.Column(db.String(50), nullable=False)
@@ -50,7 +51,7 @@ class Event(db.Model):
 			"description": self.description,
 		}
 
-# defines database information for the Event table
+# defines database information for the Days table
 class calendar(db.Model):
 	__tablename__ = "days"
 
@@ -133,16 +134,18 @@ def create_event():
 	
 	try:
 		new_event = Event(
-			organizer=data.get("organizer"),
-			description=data.get("description"),
+			title = data.get("title",)
+			organizer = data.get("organizer"),
+			description = data.get("description"),
 			size=data.get("size"),
-			time_start=data.get("time_start"),
-			time_end=data.get("time_end"),
+			time_start = data.get("time_start"),
+			time_end = data.get("time_end"),
 			day=data.get("day")
 		)
 		db.session.add(new_event)
 		db.session.commit()
 		return jsonify({"message": "Event created successfully"}), 201
+
 	except Exception as e:
 		db.session.rollback()
 		logging.error(f"Error creating event: {e}")
@@ -158,6 +161,7 @@ def send_data():
 
 	if events:
 		return jsonify([event.to_dict() for event in events])
+		
 	return jsonify({"error": "No events found for the specified day."}), 404
 
 
