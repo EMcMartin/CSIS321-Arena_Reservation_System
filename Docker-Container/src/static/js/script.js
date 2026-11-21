@@ -4,6 +4,7 @@ let clicked = null;
 let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
 
 // Global Constants for the file
+const apiUrl = 'http://localhost:8887';
 const calendar = document.getElementById('calendar');
 const newEventModal = document.getElementById('newEventModal');
 const deleteEventModal = document.getElementById('deleteEventModal');
@@ -41,7 +42,7 @@ function openModal(date)
 /**
  * This is the main function of the webage to make it reload and refesh the page with the new and updated information
  */
-function load()
+async function load()
 {
     // Finding the current date
     const dt = new Date();
@@ -76,6 +77,18 @@ function load()
     
     calendar.innerHTML = '';
 
+    const params = new URLSearchParams({ month: `${month + 1}`});
+
+    const response = await fetch(`${apiUrl}/event?${params}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
+
+    const events = await response.json();
+
+    console.log(response);
+    console.log(events);
+
     // Rendering all fo the days of the current month
     for(let i = 1; i <= paddingDays + daysInMonth; i++)
     {
@@ -87,19 +100,24 @@ function load()
         if (i > paddingDays)
         {
             daySquare.innerText = i - paddingDays;
-            const eventForDay = events.find(e => e.date == dayString);
+            
+            if (response.ok)
+            {
+
+                const dayEvents = events.filter(event => event.day === dayString);
+
+                for (const event of dayEvents) 
+                {
+                    const eventDiv = document.createElement('div');
+                    eventDiv.classList.add('event');
+                    eventDiv.innerText = event.title;
+                    daySquare.appendChild(eventDiv);
+                }
+            }
 
             if (i - paddingDays === day && nav === 0)
             {
                 daySquare.id = 'currentDay';
-            }
-
-            if (eventForDay)
-            {
-                const eventDiv = document.createElement('div');
-                eventDiv.classList.add('event');
-                eventDiv.innerText = eventForDay.title;
-                daySquare.appendChild(eventDiv);
             }
 
             daySquare.addEventListener('click', () => openModal(dayString));
@@ -138,7 +156,7 @@ function closeModal()
 /**
  * This is the function that will handle saving a new event
  */
-function saveEvent()
+async function saveEvent()
 {
     let valid = true;
     // TODO: Will need to edit this to talk to the new api
@@ -176,12 +194,30 @@ function saveEvent()
 
     if(valid)
     {
-        eventTitleInput.classList.remove('error');
-
-        events.push({
-            date: clicked,
+                
+        const eventData = {
+            event_id: 1,
             title: eventTitleInput.value,
+            organizer: nameInput.value,
+            size: 25,
+            day: clicked,
+            time_start: 7,
+            time_end: 8,
+            description: descriptionInput.value,
+        };
+
+        const response = await fetch(`${apiUrl}/event`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(eventData)
         });
+
+        const data = await response.json();
+
+        console.log(eventData);
+        console.log(data);
+
+        eventTitleInput.classList.remove('error');
 
         localStorage.setItem('events', JSON.stringify(events));
         closeModal();
