@@ -42,7 +42,7 @@ function openModal(date)
 /**
  * This is the main function of the webage to make it reload and refesh the page with the new and updated information
  */
-function load()
+async function load()
 {
     // Finding the current date
     const dt = new Date();
@@ -88,19 +88,30 @@ function load()
         if (i > paddingDays)
         {
             daySquare.innerText = i - paddingDays;
-            const eventForDay = events.find(e => e.date == dayString);
+            
+            const requestData = {
+                day:dayString 
+            }
+
+            const response = await fetch(`${apiUrl}/event`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestData)
+            });
+
+            const events = await response.json();
+
+            for (const event of events) 
+            {
+                const eventDiv = document.createElement('div');
+                eventDiv.classList.add('event');
+                eventDiv.innerText = event.title;
+                daySquare.appendChild(eventDiv);
+            }
 
             if (i - paddingDays === day && nav === 0)
             {
                 daySquare.id = 'currentDay';
-            }
-
-            if (eventForDay)
-            {
-                const eventDiv = document.createElement('div');
-                eventDiv.classList.add('event');
-                eventDiv.innerText = eventForDay.title;
-                daySquare.appendChild(eventDiv);
             }
 
             daySquare.addEventListener('click', () => openModal(dayString));
@@ -180,12 +191,13 @@ async function saveEvent()
                 
         const eventData = {
             event_id: 1,
-            organizer: nameInput.innerText,
+            title: eventTitleInput.value,
+            organizer: nameInput.value,
             size: 25,
             day: clicked,
-            start_time: 7,
-            end_time: 8,
-            description: descriptionInput.innerText,
+            time_start: 7,
+            time_end: 8,
+            description: descriptionInput.value,
         };
 
         const response = await fetch(`${apiUrl}/event`, {
@@ -196,6 +208,7 @@ async function saveEvent()
 
         const data = await response.json();
 
+        console.log(eventData);
         console.log(data);
 
         eventTitleInput.classList.remove('error');
