@@ -83,6 +83,22 @@ class calendar(db.Model):
 			],
 		}
 
+
+def parse_minutes(value) -> int:
+    if isinstance(value, int) and not isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        value = value.strip()
+        if value.isdigit():
+            return int(value)
+        if ":" in value:
+            hours_str, mins_str = value.split(":", 1)
+            hours, mins = int(hours_str), int(mins_str)
+            if not (0 <= hours <= 24 and 0 <= mins < 60) or (hours == 24 and mins > 0):
+                raise ValueError("Invalid HH:MM time")
+            return hours * 60 + mins
+    raise ValueError("Time must be integer minutes or 'HH:MM'")
+
 # setup logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 #create a new day into the database
@@ -94,11 +110,11 @@ def create_day():
 
 	try:
 		new_day = calendar(
-			id="11/01/26",
-			day=1,
-			month=11,
-			year=2026,
-			weekday="sunday",
+			id=data.get("id"),
+			day=data.get("day"),
+			month=data.get("month"),
+			year=data.get("year"),
+			weekday=data.get("weekday"),
 			available_times=Multirange([
 				Range(3, 6, "[)"),
 				Range(7, 10, "[)")
@@ -121,8 +137,8 @@ def create_event():
 		return jsonify({"error": "Invalid input"}), 400
 
 	day_id = data.get("day")
-	time_start = data.get("time_start")
-	time_end = data.get("time_end")
+	time_start = parse_minutes(data.get("time_start"))
+	time_end = parse_minutes(data.get("time_end"))
 
 	if not day_id or time_start is None or time_end is None:
 		return jsonify({"error": "'day', 'time_start', and 'time_end' are required."}), 400
@@ -140,9 +156,7 @@ def create_event():
         		calendar.available_times.isnot(None),
         		calendar.available_times.contains(booking_range),
     		)
-    		.values(
-        		available_times=calendar.available_times - booking_range
-   			)
+    		.values(available_times=calendar.available_times - booking_range)
     		.returning(calendar.available_times)
 		)
 
@@ -150,9 +164,7 @@ def create_event():
 
 		if updated_times is None:
 				db.session.rollback()
-				return jsonify({
-					"error": "Requested time is not within available times for this day."
-				}), 409
+				return jsonify({"error": "Requested time is not within available times for this day."}), 409
 		
 		
 			
