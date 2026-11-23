@@ -77,17 +77,14 @@ async function load()
     
     calendar.innerHTML = '';
 
+    // Requesting the API for the month's event data
     const params = new URLSearchParams({ month: `${month + 1}`});
-
     const response = await fetch(`${apiUrl}/event?${params}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
     });
 
     const events = await response.json();
-
-    console.log(response);
-    console.log(events);
 
     // Rendering all fo the days of the current month
     for(let i = 1; i <= paddingDays + daysInMonth; i++)
@@ -101,6 +98,7 @@ async function load()
         {
             daySquare.innerText = i - paddingDays;
             
+            // Rendering the events for the current day
             if (response.ok)
             {
 
@@ -159,7 +157,6 @@ function closeModal()
 async function saveEvent()
 {
     let valid = true;
-    // TODO: Will need to edit this to talk to the new api
 
     // Validating the input from the user
     if (!nameInput.value)

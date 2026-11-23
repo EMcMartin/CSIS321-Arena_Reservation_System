@@ -47,72 +47,35 @@
         
 
 
-        <div id="newEventModal">
+        <div class="modal" id="newEventModal">
             <h2>New Event</h2>
-            <input id="eventTitleInput" placeholder="Event Title" />
-            <br>
-            <div id="timeDropdowns">
-                <div class = "dropdown">
-                    <button>Start Time</button>
-                    <div class="content">
-                        <a href="#">9:00 AM</a>
-                        <a href="#">10:00 AM</a>
-                        <a href="#">11:00 AM</a>
-                        <a href="#">12:00 PM</a>
-                        <a href="#">1:00 PM</a>
-                        <a href="#">2:00 PM</a>
-                        <a href="#">3:00 PM</a>
-                        <a href="#">4:00 PM</a>
-                    </div>
+            <input type="text" id="eventTitleInput" placeholder="Event Title" required>
+            <div class="time-pair">
+                <div class="time-wrapper">
+                    <label for="start-time"> Start Time</label>
+                    <input type="time" id="start-time" name="start-time" min="09:00" max="18:00" value="12:00" required>
                 </div>
-                <div class = "dropdown">
-                    <button>End Time</button>
-                    <div class="content">
-                        <a href="#">9:00 AM</a>
-                        <a href="#">10:00 AM</a>
-                        <a href="#">11:00 AM</a>
-                        <a href="#">12:00 PM</a>
-                        <a href="#">1:00 PM</a>
-                        <a href="#">2:00 PM</a>
-                        <a href="#">3:00 PM</a>
-                        <a href="#">4:00 PM</a>
-                    </div>
+                
+                <div class="time-wrapper">
+                    <label for="end-time"> End Time</label>
+                    <input type="time" id="end-time" name="end-time" min="09:00" max="18:00" value="12:00" required>
                 </div>
             </div>
-            <br>
-            <input id="nameInput" placeholder="Name" />
-            <br>
-            <input id="emailInput" placeholder="Email" />
-            <br>
+            <input type="text" id="nameInput" placeholder="Name">
+            <input type="email" id="emailInput" placeholder="Email">
             <textarea id="descriptionTextArea" placeholder="Description"></textarea>
 
-            <!--
-            <h2>Choose a Time:</h2>
-
-        
-            <button id="timeButton">9:00 AM</button>
-            <button id="timeButton">10:00 AM</button>
-            <button id="timeButton">11:00 AM</button>
-            <button id="timeButton">12:00 PM</button>
-            <button id="timeButton">1:00 PM</button>
-            <button id="timeButton">2:00 PM</button>
-            <button id="timeButton">3:00 PM</button>
-            <button id="timeButton">4:00 PM</button>
-        -->
-
-            
-
             <button id="saveButton">Save</button>
-            <button id="cancelButton">Cancel</button>
+            <button class="red" id="cancelButton">Cancel</button>
         </div>
     
 
-        <div id="deleteEventModal">
+        <div class="modal" id="deleteEventModal">
             <h2>Event</h2>
 
             <p id="eventText"></p>
 
-            <button id="deleteButton">Delete</button>
+            <button class="red" id="deleteButton">Delete</button>
             <button id="closeButton">Close</button>
         </div>
 
