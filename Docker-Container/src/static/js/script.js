@@ -215,6 +215,7 @@ async function saveEvent()
         emailInput.classList.remove('error');
     }
 
+
     if(valid)
     {
         const [startHours, startMinutes] = eventStartTimeInput.value.split(":").map(Number);
@@ -229,41 +230,40 @@ async function saveEvent()
             eventEndTimeInput.classList.add('error');
             valid = false;
         }
-    }
-
-    if(valid)
-    {
+        else   
+        {
                    
-        const eventData = {
-            event_id: 1,
-            title: eventTitleInput.value,
-            organizer: nameInput.value,
-            size: 25,
-            day: clicked,
-            time_start: startTime,
-            time_end: endTime,
-            description: descriptionInput.value,
-        };
+            const eventData = {
+                event_id: 1,
+                title: eventTitleInput.value,
+                organizer: nameInput.value,
+                size: 25,
+                day: clicked,
+                time_start: startTime,
+                time_end: endTime,
+                description: descriptionInput.value,
+            };
 
-        const response = await fetch(`${apiUrl}/event`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(eventData)
-        });
-        const data = await response.json();
+            const response = await fetch(`${apiUrl}/event`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(eventData)
+            });
+            const data = await response.json();
 
-        if(response.ok)
-        {
-            console.log(eventData);
-            console.log(data);
+            if(response.ok)
+            {
+                console.log(eventData);
+                console.log(data);
 
-            eventTitleInput.classList.remove('error');
-            closeModal();
-        }
-        else
-        {
-            eventStartTimeInput.classList.add('error');
-            eventEndTimeInput.classList.add('error');
+                eventTitleInput.classList.remove('error');
+                closeModal();
+            }
+            else
+            {
+                eventStartTimeInput.classList.add('error');
+                eventEndTimeInput.classList.add('error');
+            }
         }
     }
 }
