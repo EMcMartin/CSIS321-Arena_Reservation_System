@@ -146,7 +146,7 @@ def create_event():
 	if time_start >= time_end:
 		return jsonify({"error": "'time_start' must be less than 'time_end'."}), 400
 
-	booking_range = Range(time_start, time_end, bounds="[)")
+	booking_range = Multirange([Range(time_start, time_end, bounds="[)")])
 
 	try:
 		stmt = (
@@ -166,8 +166,6 @@ def create_event():
 				db.session.rollback()
 				return jsonify({"error": "Requested time is not within available times for this day."}), 409
 		
-		
-			
 
 		new_event = Event(
 			title = data.get("title"),
