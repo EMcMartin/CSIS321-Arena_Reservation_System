@@ -1,3 +1,4 @@
+from ast import stmt
 import logging
 import os
 
@@ -9,7 +10,8 @@ from dotenv import load_dotenv
 from sqlalchemy.dialects.postgresql import INT4MULTIRANGE
 from psycopg.types.multirange import Multirange
 from psycopg.types.range import Range
-from sqlalchemy import text
+from sqlalchemy import text, update
+
 
 
 # load environment variables
@@ -81,6 +83,22 @@ class calendar(db.Model):
 			],
 		}
 
+
+def parse_minutes(value) -> int:
+    if isinstance(value, int) and not isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        value = value.strip()
+        if value.isdigit():
+            return int(value)
+        if ":" in value:
+            hours_str, mins_str = value.split(":", 1)
+            hours, mins = int(hours_str), int(mins_str)
+            if not (0 <= hours <= 24 and 0 <= mins < 60) or (hours == 24 and mins > 0):
+                raise ValueError("Invalid HH:MM time")
+            return hours * 60 + mins
+    raise ValueError("Time must be integer minutes or 'HH:MM'")
+
 # setup logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 #create a new day into the database
@@ -92,11 +110,11 @@ def create_day():
 
 	try:
 		new_day = calendar(
-			id="11/01/26",
-			day=1,
-			month=11,
-			year=2026,
-			weekday="sunday",
+			id=data.get("id"),
+			day=data.get("day"),
+			month=data.get("month"),
+			year=data.get("year"),
+			weekday=data.get("weekday"),
 			available_times=Multirange([
 				Range(3, 6, "[)"),
 				Range(7, 10, "[)")
@@ -110,23 +128,6 @@ def create_day():
 		logging.error(f"Error creating day: {e}")
 		return jsonify({"error": "An error occurred while creating the day"}), 500
 
-"""
-#getting information about event 
-@app.route("/event", methods=["GET"])
-def get_event():
-	id = request.args.get("id")
-	organizer = request.args.get("organizer")
-	size = request.args.get("size")
-	description = request.args.get("description")
-	start_time = request.args.get("start_time")
-	end_time = request.args.get("end_time")
-	day = request.args.get("day")
-	if not (id or description or organizer or size or start_time or end_time or day):
-		return jsonify({"error": "Please provide at least one query parameter."}), 400
-	return jsonify({
-		"message": "Event retrieved successfully"
-		}), 200
-		"""
 
 #creates events into the database
 @app.route("/event", methods=["POST"])
@@ -134,8 +135,38 @@ def create_event():
 	data = request.get_json()
 	if not data:
 		return jsonify({"error": "Invalid input"}), 400
+
+	day_id = data.get("day")
+	time_start = parse_minutes(data.get("time_start"))
+	time_end = parse_minutes(data.get("time_end"))
+
+	if not day_id or time_start is None or time_end is None:
+		return jsonify({"error": "'day', 'time_start', and 'time_end' are required."}), 400
 	
+	if time_start >= time_end:
+		return jsonify({"error": "'time_start' must be less than 'time_end'."}), 400
+
+	booking_range = Multirange([Range(time_start, time_end, bounds="[)")])
+
 	try:
+		stmt = (
+    		update(calendar)
+    		.where(
+        		calendar.id == day_id,
+        		calendar.available_times.isnot(None),
+        		calendar.available_times.contains(booking_range),
+    		)
+    		.values(available_times=calendar.available_times - booking_range)
+    		.returning(calendar.available_times)
+		)
+
+		updated_times = db.session.execute(stmt).scalar_one_or_none()
+
+		if updated_times is None:
+				db.session.rollback()
+				return jsonify({"error": "Requested time is not within available times for this day."}), 409
+		
+
 		new_event = Event(
 			title = data.get("title"),
 			organizer = data.get("organizer"),
@@ -150,10 +181,10 @@ def create_event():
 		return jsonify({"message": "Event created successfully"}), 201
 
 	except Exception as e:
-		db.session.rollback()
-		logging.error(f"Error creating event: {e}")
-		return jsonify({"error": "An error occurred while creating the event"}), 500
-	
+			db.session.rollback()
+			logging.error(f"Error creating event: {e}")
+			return jsonify({"error": "An error occurred while creating the event"}), 500
+		
 @app.route("/event", methods=["GET"])
 def send_data():
 	month = request.args.get("month")
@@ -164,6 +195,8 @@ def send_data():
 
 
 	return jsonify([event.to_dict() for event in events]), 200
+
+
 
 
 
