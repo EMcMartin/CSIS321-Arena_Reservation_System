@@ -10,6 +10,8 @@ const newEventModal = document.getElementById('newEventModal');
 const deleteEventModal = document.getElementById('deleteEventModal');
 const backDrop = document.getElementById("modalBackDrop");
 const eventTitleInput = document.getElementById('eventTitleInput');
+const eventStartTimeInput = document.getElementById('eventStartTimeInput');
+const eventEndTimeInput = document.getElementById('eventEndTimeInput');
 const nameInput = document.getElementById('nameInput');
 const emailInput = document.getElementById('emailInput');
 const descriptionInput = document.getElementById('descriptionTextArea');
@@ -147,6 +149,10 @@ function closeModal()
     emailInput.classList.remove('error');
     descriptionInput.value = '';
     descriptionInput.classList.remove('error');
+    eventEndTimeInput.value = '';
+    eventEndTimeInput.classList.remove('error');
+    eventStartTimeInput.value = '';
+    eventStartTimeInput.classList.remove('error');
     clicked = null;
     load();
 }
@@ -179,6 +185,26 @@ async function saveEvent()
         eventTitleInput.classList.remove('error');
     }
 
+    if(!eventEndTimeInput.value)
+    {
+        eventEndTimeInput.classList.add('error');
+        valid = false;
+    }
+    else
+    {
+        eventEndTimeInput.classList.remove('error');
+    }
+
+    if(!eventStartTimeInput.value)
+    {
+        eventStartTimeInput.classList.add('error');
+        valid = false;
+    }
+    else
+    {
+        eventStartTimeInput.classList.remove('error');
+    }
+
     if (!emailInput.value || !emailInput.value.endsWith("@georgefox.edu"))
     {
         emailInput.classList.add('error');
@@ -191,6 +217,11 @@ async function saveEvent()
 
     if(valid)
     {
+        const [startHours, startMinutes] = eventStartTimeInput.value.split(":").map(Number);
+        const [endHours, endMinutes] = eventEndTimeInput.value.split(":").map(Number);
+
+        const startTime = startMinutes + startHours * 60;
+        const endTime = endMinutes + endHours * 60;
                 
         const eventData = {
             event_id: 1,
@@ -198,8 +229,8 @@ async function saveEvent()
             organizer: nameInput.value,
             size: 25,
             day: clicked,
-            time_start: 7,
-            time_end: 8,
+            time_start: startTime,
+            time_end: endTime,
             description: descriptionInput.value,
         };
 
