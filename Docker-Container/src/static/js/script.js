@@ -222,7 +222,18 @@ async function saveEvent()
 
         const startTime = startMinutes + startHours * 60;
         const endTime = endMinutes + endHours * 60;
-                
+
+        if(startTime > endTime)
+        {    
+            eventStartTimeInput.classList.add('error');
+            eventEndTimeInput.classList.add('error');
+            valid = false;
+        }
+    }
+
+    if(valid)
+    {
+                   
         const eventData = {
             event_id: 1,
             title: eventTitleInput.value,
@@ -239,16 +250,21 @@ async function saveEvent()
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(eventData)
         });
-
         const data = await response.json();
 
-        console.log(eventData);
-        console.log(data);
+        if(response.ok)
+        {
+            console.log(eventData);
+            console.log(data);
 
-        eventTitleInput.classList.remove('error');
-
-        localStorage.setItem('events', JSON.stringify(events));
-        closeModal();
+            eventTitleInput.classList.remove('error');
+            closeModal();
+        }
+        else
+        {
+            eventStartTimeInput.classList.add('error');
+            eventEndTimeInput.classList.add('error');
+        }
     }
 }
 
