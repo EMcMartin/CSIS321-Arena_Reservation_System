@@ -10,6 +10,8 @@ const newEventModal = document.getElementById('newEventModal');
 const deleteEventModal = document.getElementById('deleteEventModal');
 const backDrop = document.getElementById("modalBackDrop");
 const eventTitleInput = document.getElementById('eventTitleInput');
+const eventStartTimeInput = document.getElementById('eventStartTimeInput');
+const eventEndTimeInput = document.getElementById('eventEndTimeInput');
 const nameInput = document.getElementById('nameInput');
 const emailInput = document.getElementById('emailInput');
 const descriptionInput = document.getElementById('descriptionTextArea');
@@ -77,17 +79,14 @@ async function load()
     
     calendar.innerHTML = '';
 
+    // Requesting the API for the month's event data
     const params = new URLSearchParams({ month: `${month + 1}`});
-
     const response = await fetch(`${apiUrl}/event?${params}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
     });
 
     const events = await response.json();
-
-    console.log(response);
-    console.log(events);
 
     // Rendering all fo the days of the current month
     for(let i = 1; i <= paddingDays + daysInMonth; i++)
@@ -101,6 +100,7 @@ async function load()
         {
             daySquare.innerText = i - paddingDays;
             
+            // Rendering the events for the current day
             if (response.ok)
             {
 
@@ -149,6 +149,10 @@ function closeModal()
     emailInput.classList.remove('error');
     descriptionInput.value = '';
     descriptionInput.classList.remove('error');
+    eventEndTimeInput.value = '';
+    eventEndTimeInput.classList.remove('error');
+    eventStartTimeInput.value = '';
+    eventStartTimeInput.classList.remove('error');
     clicked = null;
     load();
 }
@@ -159,7 +163,6 @@ function closeModal()
 async function saveEvent()
 {
     let valid = true;
-    // TODO: Will need to edit this to talk to the new api
 
     // Validating the input from the user
     if (!nameInput.value)
@@ -182,6 +185,26 @@ async function saveEvent()
         eventTitleInput.classList.remove('error');
     }
 
+    if(!eventEndTimeInput.value)
+    {
+        eventEndTimeInput.classList.add('error');
+        valid = false;
+    }
+    else
+    {
+        eventEndTimeInput.classList.remove('error');
+    }
+
+    if(!eventStartTimeInput.value)
+    {
+        eventStartTimeInput.classList.add('error');
+        valid = false;
+    }
+    else
+    {
+        eventStartTimeInput.classList.remove('error');
+    }
+
     if (!emailInput.value || !emailInput.value.endsWith("@georgefox.edu"))
     {
         emailInput.classList.add('error');
@@ -194,6 +217,11 @@ async function saveEvent()
 
     if(valid)
     {
+        const [startHours, startMinutes] = eventStartTimeInput.value.split(":").map(Number);
+        const [endHours, endMinutes] = eventEndTimeInput.value.split(":").map(Number);
+
+        const startTime = startMinutes + startHours * 60;
+        const endTime = endMinutes + endHours * 60;
                 
         const eventData = {
             event_id: 1,
@@ -201,8 +229,8 @@ async function saveEvent()
             organizer: nameInput.value,
             size: 25,
             day: clicked,
-            time_start: 7,
-            time_end: 8,
+            time_start: startTime,
+            time_end: endTime,
             description: descriptionInput.value,
         };
 

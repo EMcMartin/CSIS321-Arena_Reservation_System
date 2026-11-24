@@ -1,3 +1,4 @@
+/**/
 body {
   display: flex;
   margin-top: 50px;
@@ -15,33 +16,8 @@ button {
   color: white;
 }
 
-#header {
-  padding: 10px;
-  color: #1F2A42;
-  font-size: 26px;
-  font-family: "trade gothic bold", sans-serif;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-}
-#header button {
-  background-color:#7998AC;
-}
-#container {
-  width: 770px;
-}
-#weekdays {
-  width: 100%;
-  display: flex;
-  color: #7998AC;
-  font-size: 16px;
-  font-family: "trade gothic bold", sans-serif;
-  font-weight: bold
-}
-#weekdays div {
-  width: 100px;
-  padding: 10px;
-}
+/*Calendar Style Rules*/
+
 #calendar {
   width: 100%;
   margin: auto;
@@ -82,7 +58,114 @@ button {
   background-color: #FFFCFF !important;
   box-shadow: none !important;
 }
-#newEventModal, #deleteEventModal {
+
+/*Calendar Header*/
+
+#header {
+  padding: 10px;
+  color: #1F2A42;
+  font-size: 26px;
+  font-family: "trade gothic bold", sans-serif;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+}
+#header button {
+  background-color:#7998AC;
+}
+#container {
+  width: 770px;
+}
+#weekdays {
+  width: 100%;
+  display: flex;
+  color: #7998AC;
+  font-size: 16px;
+  font-family: "trade gothic bold", sans-serif;
+  font-weight: bold
+}
+#weekdays div {
+  width: 100px;
+  padding: 10px;
+}
+
+/*Input Style Rules*/
+
+input{
+  font-family: "trade gothic bold", sans-serif;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  color: #333;
+  box-shadow: 0px 0px 3px gray;
+}
+
+input:focus, textarea:focus{
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+}
+
+input[type="text"], input[type="email"]{
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 25px;
+}
+
+.time-pair{
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  flex: 1 1 0;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 25px;
+}
+
+.time-pair .time-wrapper{
+  width: 45%;
+}
+
+.time-wrapper{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.time-wrapper label{
+  padding-left: 5px;
+}
+
+.time-wrapper input[type="time"]{
+  box-sizing: border-box;
+  width: 100%;
+}
+
+input.error {
+  border: 3px solid red;
+}
+
+textarea {
+  padding: 8px 12px;
+  font-size: 16px;
+  font-family: "trade gothic bold", sans-serif;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  color: #333;
+  box-shadow: 0px 0px 3px gray;
+  width: 100%;
+  resize: vertical;
+  min-block-size: 3lh;
+  max-block-size: 10lh;
+  box-sizing: border-box;
+  margin-bottom: 25px;
+}
+
+/*Modal Style Rules*/
+.modal{
   display: none;
   z-index: 20;
   padding: 25px;
@@ -93,42 +176,29 @@ button {
   top: 100px;
   left: calc(50% - 175px);
   position: absolute;
-  font-family: sans-serif;
-}
-#eventTitleInput, #nameInput, #emailInput  {
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 25px;
-  border-radius: 3px;
-  outline: none;
-  border: none;
-  box-shadow: 0px 0px 3px gray;
+  font-family: "trade gothic bold", sans-serif;
 }
 
-#descriptionTextArea {
-  padding: 10px;
-  font-family: sans-serif;
-  min-height: 100px;
-  max-height: 100px;
-  min-width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 25px;
-  border-radius: 3px;
-  outline: none;
-  border: none;
-  box-shadow: 0px 0px 3px gray;
+#modalBackDrop {
+  display: none;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 10;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.8);
 }
-#eventTitleInput.error, #nameInput.error, #emailInput.error, #descriptionTextArea.error {
-  border: 2px solid red;
-}
-#cancelButton, #deleteButton {
-  background-color: #d36c6c;
-}
-#saveButton, #closeButton, #loginButton {
+
+/*Button Style Rules*/
+button {
   background-color: #7998AC;
 }
+
+button.red {
+  background-color: #d36c6c;
+}
+
 .dropdown button{
   background-color: #f0f0f0;
   color: black;
@@ -181,14 +251,4 @@ button {
 }
 #eventText {
   font-size: 14px;
-}
-#modalBackDrop {
-  display: none;
-  top: 0px;
-  left: 0px;
-  z-index: 10;
-  width: 100vw;
-  height: 100vh;
-  position: absolute;
-  background-color: rgba(0,0,0,0.8);
 }
